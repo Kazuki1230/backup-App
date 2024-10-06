@@ -10,6 +10,7 @@ target_paths = []
 def list_box():
     target_path_viewer = ft.Column(controls=[])
 
+    global target_paths
     for target_path in target_paths:
         row =ft.ListTile(
             title=ft.Text(value=target_path),
@@ -23,7 +24,7 @@ def list_box():
 
     
     wrapper = ft.Container(
-        content=target_path_viewer if len(target_paths) > 0 else ft.Text("バクアップするフォルダ、または、ファイルを選択してください"),
+        content=target_path_viewer if len(target_paths) > 0 else ft.Text("バックアップするフォルダ、または、ファイルを選択してください"),
         bgcolor=ft.colors.SURFACE_VARIANT,
         padding=ft.padding.all(5),
         border_radius=ft.border_radius.all(5),
@@ -33,6 +34,7 @@ def list_box():
     return wrapper
 
 def delete_path(e):
+    global target_paths
     target_paths.remove(e.control.parent.title.value)
     e.page.controls[2]= list_box()
     e.page.update()
@@ -42,6 +44,7 @@ def delete_path(e):
 #  FILE PICKER BUTTON  #
 # -------------------- #
 def picker_btns(page):
+    global target_paths
     def pick_file_result(e: ft.FilePickerResultEvent):
         target_paths.append(e.files[0].path)
         page.controls[2]= list_box()
@@ -73,25 +76,65 @@ def picker_btns(page):
     )
 
 # -------------------- #
+#         DIALOG       #
+# -------------------- #
+def banner(page):
+    def close_banner(e):
+        page.close(complete_banner)
+  
+    complete_banner = ft.Banner(
+        bgcolor=ft.colors.AMBER_100,
+        leading=ft.Icon(ft.icons.WARNING_AMBER_ROUNDED, color=ft.colors.AMBER, size=40),
+        content=ft.Text(
+            value="正常にバックアップされました",
+            color=ft.colors.BLACK,
+        ),
+        actions=[
+            ft.TextButton(
+                text="Close",
+                # style=action_button_style,
+                on_click=close_banner
+            ),
+        ],
+    )
+
+    return complete_banner
+
+
+# -------------------- #
 #     EXECUTE BTN      #
 # -------------------- #
-def exe_btn():
+def exe_btn(page):
     return ft.Row(
         controls=[ft.ElevatedButton(
             "Backup 実行",
-            on_click=backup
+            on_click=lambda e: backup(e, page),
         )],
         alignment=ft.MainAxisAlignment.CENTER,
     )
 
-def backup(e): # イベントハンドラーの時は、(e)が必須! そうしないと、エラーになる
-    backup_with_timestamp(target_paths)
+# -------------------- #
+#     EXECUTE BACKUP   #
+# -------------------- #
+def backup(e, page): # イベントハンドラーの時は、(e)が必須! そうしないと、エラーになる
+    try:
+        global target_paths
+        backup_with_timestamp(target_paths)
+        page.open(banner(page))
+        target_paths = []
+        page.controls[2] = list_box()
+        page.update()
+
+    except Exception as e:
+        print(e)
+        pass
     
 # ====================== #
 #     MAIN FUNCTION      #
 # ====================== #
 def main(page: ft.Page):
     page.title = "Backup Tool"
-    page.add(picker_btns(page), ft.Divider(), list_box(), exe_btn())
+    page.add(picker_btns(page), ft.Divider(), list_box(), exe_btn(page))
 
-ft.app(target=main)
+if __name__ == "__main__":
+    ft.app(target=main)

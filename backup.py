@@ -12,11 +12,13 @@ def backup_with_timestamp(targets: list[str]):
             if os.path.isdir(target):
                 bu_fldr_name = 'bu'
                 trgt_fldr_name = f'{target.split('\\')[-1]}_{timestamp}'
+
                 output_fldr = os.path.join(
                     os.path.dirname(target),
                     bu_fldr_name,
                     trgt_fldr_name
                 )
+                
                 # コピー実行
                 shutil.copytree(target, output_fldr)
                 print(f'フォルダが {output_fldr} にコピーされました。')

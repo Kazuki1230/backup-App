@@ -1,5 +1,4 @@
 # A backup-App by Flet
-
 An example of a minimal Flet app.
 
 To run the app:
