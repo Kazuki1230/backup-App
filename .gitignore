@@ -160,7 +160,7 @@ cython_debug/
 #.idea/
 
 test_fldr/
-assets/icon.png
+assets/
 flet_samples/
 user_preferences.txt
 build/
