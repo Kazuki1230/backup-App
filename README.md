@@ -1,4 +1,4 @@
-# A backup-tool Flet app
+# A backup-App by Flet
 
 An example of a minimal Flet app.
 
