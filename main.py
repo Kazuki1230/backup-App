@@ -10,6 +10,7 @@ target_paths = []
 def list_box():
     target_path_viewer = ft.Column(controls=[])
 
+    global target_paths
     for target_path in target_paths:
         row =ft.ListTile(
             title=ft.Text(value=target_path),
@@ -33,6 +34,7 @@ def list_box():
     return wrapper
 
 def delete_path(e):
+    global target_paths
     target_paths.remove(e.control.parent.title.value)
     e.page.controls[2]= list_box()
     e.page.update()
@@ -42,6 +44,7 @@ def delete_path(e):
 #  FILE PICKER BUTTON  #
 # -------------------- #
 def picker_btns(page):
+    global target_paths
     def pick_file_result(e: ft.FilePickerResultEvent):
         target_paths.append(e.files[0].path)
         page.controls[2]= list_box()
@@ -115,8 +118,12 @@ def exe_btn(page):
 # -------------------- #
 def backup(e, page): # イベントハンドラーの時は、(e)が必須! そうしないと、エラーになる
     try:
+        global target_paths
         backup_with_timestamp(target_paths)
         page.open(banner(page))
+        target_paths = []
+        page.controls[2] = list_box()
+        page.update()
 
     except Exception as e:
         print(e)
